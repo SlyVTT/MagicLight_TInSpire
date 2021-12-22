@@ -31,7 +31,19 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="Debugger/DebuggerLTE.cpp" />
+		<Unit filename="Debugger/DebuggerLTE.hpp" />
+		<Unit filename="Globals/GUIToolkitNFGlobals.hpp" />
+		<Unit filename="Globals/GlobalFunctions.cpp" />
+		<Unit filename="Globals/GlobalFunctions.hpp" />
 		<Unit filename="Makefile" />
+		<Unit filename="Managers/KeyManagerLTE.cpp" />
+		<Unit filename="Managers/KeyManagerLTE.hpp" />
+		<Unit filename="Managers/MouseManagerLTE.cpp" />
+		<Unit filename="Managers/MouseManagerLTE.hpp" />
+		<Unit filename="Managers/TimeManagerLTE.cpp" />
+		<Unit filename="Managers/TimeManagerLTE.hpp" />
+		<Unit filename="colors.h" />
 		<Unit filename="mainNSpire.cpp" />
 		<Unit filename="structs.h" />
 		<Extensions />

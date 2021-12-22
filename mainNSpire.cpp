@@ -12,8 +12,9 @@
 //#include <gint/bfile.h>
 //#include <gint/std/stdlib.h>
 
-#include "./Managers/KeyManagerLTE.hpp"
-#include "./Managers/MouseManagerLTE.hpp"
+
+#include "./nSpireLTE/nSpireLTE.hpp"
+
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_gfxPrimitives.h>
@@ -390,6 +391,9 @@ void saveprogress( void )
        BFile_Close( file );
 
        */
+
+       if (is_save_existing_boolean())
+              delete_save();
 
        FILE *fptr;
        fptr = fopen( filepath.c_str(), "wb" );
@@ -1198,6 +1202,8 @@ void synchroniseGame( void )
               }
               else Map[k].visited= false;
        }
+
+       currentLevel = sauvegarde.currentLevel;
 }
 
 
@@ -1526,6 +1532,14 @@ void drawQuit( void )
               get_inputs_quit();
 
        }
+
+       if (selectOptionPause==1 || selectOptionPause==2)
+       {
+           updateCurrentState();
+           delete_save();
+           saveprogress();
+       }
+
 }
 
 void get_inputs_loose(void)
@@ -1651,7 +1665,7 @@ void get_inputs_difficultymenu(void)
        {
               doneDifficulty = true;
        }
-              if (KeyManager::kbCTRL() && KeyManager::kbDOT_Press_Event() )
+       if (KeyManager::kbCTRL() && KeyManager::kbDOT_Press_Event() )
        {
               TakeScreenShot( screenCalcul );
        }
@@ -1859,7 +1873,7 @@ void get_inputs_startmenu(void)
        {
               doneStart = true;
        }
-              if (KeyManager::kbCTRL() && KeyManager::kbDOT_Press_Event() )
+       if (KeyManager::kbCTRL() && KeyManager::kbDOT_Press_Event() )
        {
               TakeScreenShot( screenCalcul );
        }
@@ -1987,7 +2001,7 @@ unsigned char drawStartMenu( void )
        return selectStartMenu;
 }
 
-static int get_inputs_story(void)
+void get_inputs_story(void)
 {
        KeyManager::Logic();
        MouseManager::Logic();
@@ -1996,7 +2010,7 @@ static int get_inputs_story(void)
        {
               doneStory = true;
        }
-              if (KeyManager::kbCTRL() && KeyManager::kbDOT_Press_Event() )
+       if (KeyManager::kbCTRL() && KeyManager::kbDOT_Press_Event() )
        {
               TakeScreenShot( screenCalcul );
        }
@@ -2156,7 +2170,7 @@ void launch_Boss_Attack( void )
                                    source.w =16;
                                    source.h = 16;
                                    dest.x = xpart-8;
-                                   dest.y = xpart-8;
+                                   dest.y = ypart-8;
                                    source.x = frame_bullet*16;
                                    source.y = attacktype*16;
                                    SDL_BlitSurface( bulletsbicolor, &source, screenCalcul, &dest );
@@ -2211,7 +2225,7 @@ void launch_Boss_Attack( void )
                                    source.w =16;
                                    source.h = 16;
                                    dest.x = xpart-8;
-                                   dest.y = xpart-8;
+                                   dest.y = ypart-8;
                                    source.x = frame_bullet*16;
                                    source.y = attacktype*16;
                                    SDL_BlitSurface( bulletsbicolor, &source, screenCalcul, &dest );
@@ -2402,12 +2416,12 @@ void get_inputs(void)
        KeyManager::Logic();
        MouseManager::Logic();
 
-/*
-       if (KeyManager::kbESC() && KeyManager::kbCTRL())
-       {
-              doneGame = true;
-       }
-*/
+       /*
+              if (KeyManager::kbESC() && KeyManager::kbCTRL())
+              {
+                     doneGame = true;
+              }
+       */
        if (KeyManager::kbESC())
        {
               drawQuit();
@@ -2435,22 +2449,22 @@ void get_inputs(void)
 
        if (MouseManager::kbLEFT())
        {
-              gameMechanics( selected, GAUCHE);
+              if (!mouvement) gameMechanics( selected, GAUCHE);
        }
 
        if (MouseManager::kbRIGHT())
        {
-              gameMechanics( selected, DROITE);
+              if (!mouvement) gameMechanics( selected, DROITE);
        }
 
        if (MouseManager::kbUP())
        {
-              gameMechanics( selected, HAUT);
+              if (!mouvement) gameMechanics( selected, HAUT);
        }
 
        if (MouseManager::kbDOWN())
        {
-              gameMechanics( selected, BAS);
+              if (!mouvement) gameMechanics( selected, BAS);
        }
 
        if (KeyManager::kbCTRL())
@@ -2608,10 +2622,20 @@ void loadResources( void )
        fontfantasyblack = nSDL_LoadFont(NSDL_FONT_FANTASY, 0, 0, 0);
        fontfantasygrey = nSDL_LoadFont(NSDL_FONT_FANTASY, 150, 150, 150);
        fontfantasyred = nSDL_LoadFont(NSDL_FONT_FANTASY, 255, 0, 0);
-       fontfantasywhite = nSDL_LoadFont(NSDL_FONT_FANTASY, 240, 240, 240);
+       fontfantasywhite = nSDL_LoadFont(NSDL_FONT_FANTASY, 220, 220, 220);
        fonttinyblack = nSDL_LoadFont(NSDL_FONT_TINYTYPE, 0, 0, 0);
        fonttinygrey = nSDL_LoadFont(NSDL_FONT_TINYTYPE, 150, 150, 150);
        fonttinywhite = nSDL_LoadFont(NSDL_FONT_TINYTYPE, 255, 255, 255);
+
+       SDL_bool toggle = SDL_FALSE;
+
+       nSDL_EnableFontMonospaced(fontfantasyblack, toggle );
+       nSDL_EnableFontMonospaced(fontfantasygrey, toggle );
+       nSDL_EnableFontMonospaced(fontfantasyred, toggle );
+       nSDL_EnableFontMonospaced(fontfantasywhite, toggle );
+       nSDL_EnableFontMonospaced(fonttinyblack, toggle );
+       nSDL_EnableFontMonospaced(fonttinygrey, toggle );
+       nSDL_EnableFontMonospaced(fonttinywhite, toggle );
 }
 
 bool checkNextPositionMonster( unsigned int Xtarget, unsigned int Ytarget, unsigned int direction )
@@ -5574,6 +5598,8 @@ void exitAndFree( void )
        nSDL_FreeFont(fonttinygrey);
        nSDL_FreeFont(fonttinywhite);
 
+       SDL_Quit();
+
 }
 
 
@@ -5928,7 +5954,8 @@ void renderMap( SDL_Surface *surf )
 
 void initMap( void )
 {
-       for( unsigned char k=0; k < 33; k++) Map[k].visited = false;
+       for( unsigned char k=0; k < 33; k++)
+              Map[k].visited = false;
        currentLevel = 0;
 }
 
@@ -5984,6 +6011,8 @@ int main(int argc, char **argv)
 
        KeyManager::Initialize();
        MouseManager::Initialize();
+       //TimeManager::Initialize();
+       //Debugger::Initialize();
 
        do
        {
@@ -6025,16 +6054,21 @@ int main(int argc, char **argv)
               }
               else if (choice==1)
               {
+                     //Debugger::TimerLog( "option 1 selectionnée\n" );
+
                      // We start a new game, so we load Level #000
 
                      SDL_Delay(200);
                      difficulty = drawDifficultyMenu();
+
+                     //Debugger::TimerLog( "\t Difficultée selectionnée = %d \n", difficulty );
 
                      BlackFrag = false;
                      WhiteFrag = false;
                      RedFrag = false;
                      GreenFrag = false;
                      BlueFrag = false;
+
                      score = 0;
 
                      if (difficulty==0) life=5;
@@ -6045,9 +6079,19 @@ int main(int argc, char **argv)
 
                      drawStoryMenu();
 
+                     //Debugger::TimerLog( "\t Draw Story Passée \n" );
+
+                     delete_save();
+
+                     //Debugger::TimerLog( "\t Delete Save Passée \n" );
+
                      initMap();
 
+                     //Debugger::TimerLog( "\t Init Map Passée \n" );
+
                      loadLevel( 0 );
+
+                     //Debugger::TimerLog( "\t Load Level Passée \n" );
               }
               else if (choice==2)
               {
@@ -6056,6 +6100,9 @@ int main(int argc, char **argv)
               }
 
               initWalls();
+
+              //Debugger::TimerLog( "\t InitWall Passée \n" );
+              //Debugger::TimerLog( "J'entre dans la boucle de jeu\n" );
 
               while (!doneGame)
               {
@@ -6147,6 +6194,9 @@ int main(int argc, char **argv)
 
        KeyManager::Close();
        MouseManager::Close();
+       //TimeManager::Close();
+       //Debugger::Close();
+
 
        exitAndFree( );
 

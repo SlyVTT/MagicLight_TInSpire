@@ -10,7 +10,7 @@ GCCFLAGS = -Wall -W -marm -Wunused-variable -Wunused-parameter -ffunction-sectio
 LDFLAGS = -Wl,--gc-sections
 ZEHNFLAGS = --name "MagicLight" --compress --uses-lcd-blit true
 ifeq ($(DEBUG),FALSE)
-	GCCFLAGS += -Os
+	GCCFLAGS += -O3
 else
 	GCCFLAGS += -O0 -g
 endif
